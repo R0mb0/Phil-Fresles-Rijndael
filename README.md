@@ -1,4 +1,4 @@
-# Phil Fresle's Rijndael library for ASP
+# Phil Fresle's Rijndael class for ASP
 
 > The enclosed VB project includes a VB class that implements the Rijndael AES block encryption algorithm. The form in the project runs some test data through the class.
 >
