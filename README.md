@@ -1,10 +1,10 @@
-# Phil Fresle's Rijndael class for ASP
+# Phil Fresle's Rijndael library for ASP
 
 > The enclosed VB project includes a VB class that implements the Rijndael AES block encryption algorithm. The form in the project runs some test data through the class.
 >
 >The rijndael.asp file is a VBScript ASP file that can be used as a server side include for encryption using the Rijndael AES block cipher algorithm. The rijndaeltest.asp shows how the encryption routine can be called by running some test data through the algorithm.
 
-## CRijndael.cls
+## `CRijndael.cls`
 
 -  **MODULE:**       CRijndael
 -  **FILENAME:**     CRijndael.cls
@@ -32,7 +32,7 @@
                                with 256 bit key. Problem was in the gkey
                                function. Now properly matches NIST values.
 
-## FTestRijndael.frm
+## `FTestRijndael.frm`
 
 - **MODULE:**       FTestRijndael
 - **FILENAME:**     FTestRijndael.frm
@@ -50,7 +50,7 @@
   - **19-Feb-2001   Phil Fresle**     Initial Version
   - **03-Apr-2001   Phil Fresle**     Also tests EncryptData and DecryptData functions
  
-## rijndael.asp
+## `rijndael.asp`
 
 - **FILENAME:**     Rijndael.asp
 - **AUTHOR:**       Phil Fresle
@@ -75,5 +75,16 @@
  encryption.
   - **19-Apr-2001 Phil Fresle** Thanks to Paolo Migliaccio for finding a bug with 256 bit 
  key. Problem was in the gkey function. Now properly matches NIST values. 
+
+### `rijndael.asp`'s interface
+
+- `Public Function EncryptData(bytMessage, bytPassword)`
+- `Public Function DecryptData(bytIn, bytPassword)`
+
+### Example how to encrypt and decrypt
+
+```
+
+```
 
 ## ⚠️ I didn't make these files, they're open for public use though. ⚠️
