@@ -606,7 +606,7 @@ Private Sub CopyBytesASP(bytDest, lDestStart, bytSource(), lSourceStart, lLength
     Loop Until lCount = lLength
 End Sub
 
-Public Function EncryptData(bytMessage, bytPassword)
+Public Function EncryptData(message, password)
     Dim bytKey(31)
     Dim bytIn()
     Dim bytOut()
@@ -617,13 +617,31 @@ Public Function EncryptData(bytMessage, bytPassword)
     Dim bytLen(3)
     Dim lPosition
     
-    If Not IsInitialized(bytMessage) Then
-        Exit Function
+    If Not Len(message) > 0 Then
+        'Exit Function
+        Call Err.Raise(vbObjectError + 10, "rijndael - EncryptData", "No message passed ")
     End If
-    If Not IsInitialized(bytPassword) Then
-        Exit Function
+    If Not Len(password) > 0 Then
+        'Exit Function
+        Call Err.Raise(vbObjectError + 10, "rijndael - EncryptData", "No password passed")
     End If
+
+    Dim bytPassword()
+    Dim bytMessage()
+
+    lLength = Len(password)
+	ReDim bytPassword(lLength-1)
+	For lCount = 1 To lLength
+		bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
+	Next
+
+    	lLength = Len(message)
+		ReDim bytMessage(lLength-1)
+		For lCount = 1 To lLength
+			bytMessage(lCount-1)=CByte(AscB(Mid(message,lCount,1)))
+		Next
     
+
     For lCount = 0 To UBound(bytPassword)
         bytKey(lCount) = bytPassword(lCount)
         If lCount = 31 Then
@@ -652,7 +670,14 @@ Public Function EncryptData(bytMessage, bytPassword)
         CopyBytesASP bytOut, lCount, bytTemp, 0, 32
     Next
     
-    EncryptData = bytOut
+    Dim sTemp
+    sTemp = ""
+	For lCount = 0 To UBound(bytOut)
+		sTemp = sTemp & Right("0" & Hex(bytOut(lCount)), 2)
+	Next
+
+    'EncryptData = bytOut
+    EncryptData = sTemp
 End Function
 
 Public Function DecryptData(bytIn, bytPassword)
