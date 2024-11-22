@@ -608,7 +608,8 @@ End Sub
 
 Public Function EncryptData(message, password)
     Dim bytKey(31)
-    Dim bytIn()
+    Dim bytMessage()
+    Dim bytPassword()
     Dim bytOut()
     Dim bytTemp(31)
     Dim lCount
@@ -617,31 +618,25 @@ Public Function EncryptData(message, password)
     Dim bytLen(3)
     Dim lPosition
     
-    If Not Len(message) > 0 Then
-        'Exit Function
-        Call Err.Raise(vbObjectError + 10, "rijndael - EncryptData", "No message passed ")
-    End If
-    If Not Len(password) > 0 Then
-        'Exit Function
-        Call Err.Raise(vbObjectError + 10, "rijndael - EncryptData", "No password passed")
-    End If
-
-    Dim bytPassword()
-    Dim bytMessage()
-
-    lLength = Len(password)
-	ReDim bytPassword(lLength-1)
-	For lCount = 1 To lLength
-		bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
-	Next
-
-    	lLength = Len(message)
-		ReDim bytMessage(lLength-1)
-		For lCount = 1 To lLength
-			bytMessage(lCount-1)=CByte(AscB(Mid(message,lCount,1)))
-		Next
+    'If Not IsInitialized(bytMessage) Then
+    '    Exit Function
+    'End If
+    'If Not IsInitialized(bytPassword) Then
+    '    Exit Function
+    'End If
     
 
+    lLength = Len(message)
+    ReDim bytMessage(lLength-1)
+    For lCount = 1 To lLength
+        bytMessage(lCount-1)=CByte(AscB(Mid(message,lCount,1)))
+    Next
+    lLength = Len(password)
+    ReDim bytPassword(lLength-1)
+    For lCount = 1 To lLength
+        bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
+    Next
+    
     For lCount = 0 To UBound(bytPassword)
         bytKey(lCount) = bytPassword(lCount)
         If lCount = 31 Then
@@ -658,30 +653,44 @@ Public Function EncryptData(message, password)
     If lEncodedLength Mod 32 <> 0 Then
         lEncodedLength = lEncodedLength + 32 - (lEncodedLength Mod 32)
     End If
-    ReDim bytIn(lEncodedLength - 1)
+    ReDim bytMessage(lEncodedLength - 1)
     ReDim bytOut(lEncodedLength - 1)
     
-    Unpack lLength, bytIn
-    CopyBytesASP bytIn, 4, bytMessage, 0, lLength
+    Unpack lLength, bytMessage
+    CopyBytesASP bytMessage, 4, bytMessage, 0, lLength
 
     For lCount = 0 To lEncodedLength - 1 Step 32
-        CopyBytesASP bytTemp, 0, bytIn, lCount, 32
+        CopyBytesASP bytTemp, 0, bytMessage, lCount, 32
         Encrypt bytTemp
         CopyBytesASP bytOut, lCount, bytTemp, 0, 32
     Next
     
+    'EncryptData = bytOut
     Dim sTemp
     sTemp = ""
-	For lCount = 0 To UBound(bytOut)
-		sTemp = sTemp & Right("0" & Hex(bytOut(lCount)), 2)
-	Next
+    For lCount = 0 To UBound(bytOut)
+        sTemp = sTemp & Right("0" & Hex(bytOut(lCount)), 2)
+    Next
 
-    'EncryptData = bytOut
     EncryptData = sTemp
 End Function
 
-Public Function DecryptData(bytIn, bytPassword)
-    Dim bytMessage()
+Private Function stringToArray(text)
+Dim length
+length = Len(text)
+Dim outArray() 
+Redim outArray(length)
+Dim index 
+For index = 0 to length
+    outArray(index) = Left(Right(text,(length - index)), (1))
+Next 
+stringToArray = outArray
+End Function
+
+Public Function DecryptData(message, password)
+    Dim bytMessage
+    bytMessage = Array()
+    Dim bytPassword()
     Dim bytKey(31)
     Dim bytOut()
     Dim bytTemp(31)
@@ -691,19 +700,29 @@ Public Function DecryptData(bytIn, bytPassword)
     Dim bytLen(3)
     Dim lPosition
     
-    If Not IsInitialized(bytIn) Then
-        Exit Function
-    End If
-    If Not IsInitialized(bytPassword) Then
-        Exit Function
-    End If
+    'If Not IsInitialized(bytMessage) Then
+    '    Exit Function
+    'End If
+    'If Not IsInitialized(bytPassword) Then
+    '    Exit Function
+    'End If
     
-    lEncodedLength = UBound(bytIn) + 1
-    
+    bytMessage = stringToArray(message)
+
+    lLength = Len(password)
+    ReDim bytPassword(lLength-1)
+    For lCount = 1 To lLength
+        bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
+    Next
+
+    lEncodedLength = UBound(bytMessage) + 1
+
     If lEncodedLength Mod 32 <> 0 Then
         Exit Function
     End If
     
+         Response.write("<br> Stampa di debug")
+
     For lCount = 0 To UBound(bytPassword)
         bytKey(lCount) = bytPassword(lCount)
         If lCount = 31 Then
@@ -717,13 +736,13 @@ Public Function DecryptData(bytIn, bytPassword)
     ReDim bytOut(lEncodedLength - 1)
     
     For lCount = 0 To lEncodedLength - 1 Step 32
-        CopyBytesASP bytTemp, 0, bytIn, lCount, 32
+        CopyBytesASP bytTemp, 0, bytMessage, lCount, 32
         Decrypt bytTemp
         CopyBytesASP bytOut, lCount, bytTemp, 0, 32
     Next
 
     lLength = Pack(bytOut)
-    
+
     If lLength > lEncodedLength - 4 Then
         Exit Function
     End If
@@ -731,6 +750,13 @@ Public Function DecryptData(bytIn, bytPassword)
     ReDim bytMessage(lLength - 1)
     CopyBytesASP bytMessage, 0, bytOut, 4, lLength
     
-    DecryptData = bytMessage
+    'DecryptData = bytMessage
+    Dim sTemp
+    sTemp = ""
+    For lCount = 0 To UBound(bytMessage)
+        sTemp = sTemp & Right("0" & Hex(bytMessage(lCount)), 2)
+    Next
+
+    DecryptData = sTemp
 End Function
 %>
