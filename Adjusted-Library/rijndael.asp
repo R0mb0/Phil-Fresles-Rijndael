@@ -625,6 +625,9 @@ Public Function EncryptData(message, password)
     '    Exit Function
     'End If
     
+    Response.write("<br> <h1> Controllo dei parametri di cifrature </h1>")
+    Response.write("<br> Messaggio: " & message)
+    Response.write("<br> Password: " & password)
 
     lLength = Len(message)
     ReDim bytMessage(lLength-1)
@@ -637,6 +640,18 @@ Public Function EncryptData(message, password)
         bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
     Next
     
+    Response.write("<br> <h2> Bytes passati </h2>")
+    Response.write("<br> <h3> Messaggio </h3>")
+    Dim temp 
+    For Each temp in bytMessage
+    Response.write("<br> - " & temp)
+    Next 
+    Response.write("<br> <h3> Password </h3>")
+    For Each temp in bytPassword
+    Response.write("<br> - " & temp)
+    Next 
+
+
     For lCount = 0 To UBound(bytPassword)
         bytKey(lCount) = bytPassword(lCount)
         If lCount = 31 Then
@@ -666,7 +681,11 @@ Public Function EncryptData(message, password)
     Next
     
     'EncryptData = bytOut
-    Dim sTemp
+    Response.write("<br> <h3> Risultato </h3>")
+    For Each temp in bytOut
+    Response.write("<br> - " & temp)
+    Next 
+
     sTemp = ""
     For lCount = 0 To UBound(bytOut)
         sTemp = sTemp & Right("0" & Hex(bytOut(lCount)), 2)
@@ -677,12 +696,15 @@ End Function
 
 Private Function stringToArray(text)
 Dim length
-length = Len(text)
+length = Len(text) 
+Dim myIndex
+myIndex = 0
 Dim outArray() 
-Redim outArray(length)
 Dim index 
-For index = 0 to length
-    outArray(index) = Left(Right(text,(length - index)), (1))
+For index = 0 To length - 1 Step 2
+    Redim Preserve outArray(myIndex)
+    outArray(myIndex) = Left(Right(text,(length - index)), (2))
+    myIndex = myIndex + 1
 Next 
 stringToArray = outArray
 End Function
@@ -699,7 +721,7 @@ Public Function DecryptData(message, password)
     Dim lEncodedLength
     Dim bytLen(3)
     Dim lPosition
-    
+
     'If Not IsInitialized(bytMessage) Then
     '    Exit Function
     'End If
@@ -707,7 +729,21 @@ Public Function DecryptData(message, password)
     '    Exit Function
     'End If
     
-    bytMessage = stringToArray(message)
+    Dim tempArray
+    'bytMessage = stringToArray(message)
+    tempArray = stringToArray(message)
+    Dim index 
+    index = 0 
+    Dim digit
+    For Each digit In tempArray
+    Redim Preserve bytMessage(index)
+    bytMessage(index) = CLng("&H" & digit)
+    index = index + 1
+    Next 
+
+    Response.write("<br> <h1> Controllo dei parametri di decifratura </h1>")
+    Response.write("<br> Messaggio: " & message)
+    Response.write("<br> Password: " & password)
 
     lLength = Len(password)
     ReDim bytPassword(lLength-1)
@@ -715,13 +751,22 @@ Public Function DecryptData(message, password)
         bytPassword(lCount-1)=CByte(AscB(Mid(password,lCount,1)))
     Next
 
+    Response.write("<br> <h2> Bytes passati </h2>")
+    Response.write("<br> <h3> Messaggio </h3>")
+    Dim temp 
+    For Each temp in bytMessage
+    Response.write("<br> - " & temp)
+    Next 
+    Response.write("<br> <h3> Password </h3>")
+    For Each temp in bytPassword
+    Response.write("<br> - " & temp)
+    Next 
+
     lEncodedLength = UBound(bytMessage) + 1
 
     If lEncodedLength Mod 32 <> 0 Then
         Exit Function
     End If
-    
-         Response.write("<br> Stampa di debug")
 
     For lCount = 0 To UBound(bytPassword)
         bytKey(lCount) = bytPassword(lCount)
@@ -729,7 +774,7 @@ Public Function DecryptData(message, password)
             Exit For
         End If
     Next
-    
+
     gentables
     gkey 8, 8, bytKey
 
@@ -746,16 +791,19 @@ Public Function DecryptData(message, password)
     If lLength > lEncodedLength - 4 Then
         Exit Function
     End If
+
+    'Response.write("<br> <h1> Stampa di debug </h1>")
     
     ReDim bytMessage(lLength - 1)
     CopyBytesASP bytMessage, 0, bytOut, 4, lLength
     
     'DecryptData = bytMessage
-    Dim sTemp
-    sTemp = ""
-    For lCount = 0 To UBound(bytMessage)
-        sTemp = sTemp & Right("0" & Hex(bytMessage(lCount)), 2)
-    Next
+    'lLength = UBound(bytMessage) + 1
+    'Dim sTemp
+    'For lCount = 0 To lLength - 1
+    '    sTemp = sTemp & Chr(bytMessage(lCount))
+    '    Response.write("<br> - " & sTemp)
+    'Next
 
     DecryptData = sTemp
 End Function
