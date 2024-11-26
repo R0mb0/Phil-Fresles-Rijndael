@@ -4,12 +4,12 @@
 [![Open Source Love svg3](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/R0mb0/Dynamic_array_classic_asp)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1842e978056b4031ac78178e76779015)](https://app.codacy.com/gh/R0mb0/Phil-Fresles-Rijndael/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-### `rijndael.asp`'s interface
+## `rijndael.asp`'s interface
 
 - `Public Function EncryptData(ByVal message, ByVal password)`
 - `Public Function DecryptData(ByVal message, ByVal password)`
 
-### Example how to encrypt and decrypt
+## Example how to encrypt and decrypt
 
 ```
 <%@LANGUAGE="VBSCRIPT"%>
@@ -51,4 +51,4 @@ Response.write("<br> <h2> Decrypted message: </h2>" & decrypted)
   Implementation of the AES Rijndael Block Cipher. Inspired by Mike Scott's
   implementation in C. 
 
-## ⚠️ I've modified the original library for working with strings directly rather than transforms it in bytes.
+### ⚠️ I've modified the original library for working with strings directly rather than transforms it in bytes.
