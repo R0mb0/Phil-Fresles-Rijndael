@@ -51,4 +51,4 @@ Response.write("<br> <h2> Decrypted message: </h2>" & decrypted)
 %>
 ```
 
-## ⚠️ I've modified the original library for working with strings directly rather than transforms it in bytes
+## ⚠️ I've modified the original library for working with strings directly rather than transforms it in bytes.
