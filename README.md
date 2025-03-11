@@ -11,7 +11,7 @@
 
 ## Example how to encrypt and decrypt
 
-```
+```asp
 <%@LANGUAGE="VBSCRIPT"%>
 <!--#include file="rijndael.asp"-->
 <%
